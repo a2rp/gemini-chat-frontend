@@ -77,7 +77,7 @@ export const Styled = {
     CharCount: styled.div`
         position: absolute;
         right: 20px;
-        top: 10px;
+        top: -30px;
         color: #fff;
     `,
 
@@ -133,6 +133,13 @@ export const Styled = {
         flex-wrap: wrap;
         padding: 1rem;
         justify-content: center;
+    `,
+
+    Note: styled.div`
+        margin: 0 auto;
+        margin-top: 50px;
+        max-width: 600px;
+        text-align: center;
     `,
 
     SuggestionCard: styled.div`

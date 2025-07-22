@@ -109,6 +109,10 @@ const ChatBox = () => {
     };
     const cancelClearAll = () => setConfirmClearAll(false);
 
+    useEffect(() => {
+        toast.info("⚠️ Note: Backend is hosted on free Render server. It may take time to wake up and responses may be delayed... my apologies in advance!");
+    }, []);
+
     return (
         <>
             <Styled.Wrapper>
@@ -117,13 +121,18 @@ const ChatBox = () => {
 
                     <Styled.ChatBox ref={chatContainerRef}>
                         {chatHistory.length === 0 ? (
-                            <Styled.Suggestions>
-                                {sampleQuestions.map((q, i) => (
-                                    <Styled.SuggestionCard key={i} onClick={() => handleAsk(q)}>
-                                        {q}
-                                    </Styled.SuggestionCard>
-                                ))}
-                            </Styled.Suggestions>
+                            <>
+                                <Styled.Suggestions>
+                                    {sampleQuestions.map((q, i) => (
+                                        <Styled.SuggestionCard key={i} onClick={() => handleAsk(q)}>
+                                            {q}
+                                        </Styled.SuggestionCard>
+                                    ))}
+                                </Styled.Suggestions>
+                                <Styled.Note>
+                                    ⚠️ Note: Backend is hosted on free Render server. It may take time to wake up and responses may be delayed... my apologies in advance!
+                                </Styled.Note>
+                            </>
                         ) : (
                             chatHistory.map((entry, index) => {
                                 if (entry.role === "user" && chatHistory[index + 1]?.role === "model") {
