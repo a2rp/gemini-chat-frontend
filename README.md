@@ -1,36 +1,41 @@
-# Gemini Chatbot – Frontend (ReactJS + Styled Components)
+# Gemini Smart Chat – Frontend
 
-This is the React-based frontend for a Gemini-powered AI chatbot.
-Users can
+A sleek, user-friendly AI chatbot frontend built using **ReactJS**, **Styled-Components**, and **Material UI**. Connects with an Express backend powered by **Groq LLaMA3 API**.
 
--   interact with Gemini,
--   view chat history,
--   delete individual messages, or
--   clear all chats.
-    Gemini API is securely accessed via a backend server.
+---
 
-## 🛠️ Features
+## 🚀 Features
 
--   Built with **React 18 + Styled Components**
--   Gemini Chat API via secured backend
--   Chat memory
--   Toast notifications using `react-toastify`
--   Delete individual message pairs
--   Clear all chats with confirmation
--   Sample suggestions when no chat exists
--   Auto-scroll and localStorage support
+-   Sample questions with one-click triggering
+-   Type your own query with real-time character counter (limit: 50 chars)
+-   AI replies rendered with role-based icons
+-   Clear All chats or delete specific ones with confirmation modals
+-   Chat history saved in localStorage
+-   Toast notifications for feedback
 
-## 🚀 Tech Stack
+---
 
--   React + Vite
--   Styled Components
--   Toastify
--   Material UI (for icons/spinner)
+## 🔗 Technologies Used
 
-## 🧪 How to Run (Frontend)
+-   React 18
+-   Styled-Components
+-   Material UI Icons / Spinner
+-   React Toastify
+-   React Icons
+
+---
+
+## 🌐 Live URL
+
+[https://gemini-smart-chat.netlify.app](https://gemini-smart-chat.netlify.app)
+
+---
+
+## 🛠️ Local Setup
 
 ```bash
-cd frontend
+git clone https://github.com/a2rp/gemini-chat-frontend.git
+cd gemini-chat-frontend
 npm install
 npm run dev
 ```

@@ -37,7 +37,7 @@ export const Styled = {
             margin-bottom: 0.5rem;
         }
 
-        .geminiReply {
+        .aiReply {
             display: flex;
             align-items: flex-start;
             gap: 10px;
@@ -61,6 +61,7 @@ export const Styled = {
     `,
     ControlsSection: styled.div`
         /* border: 1px solid #fff; */
+        position: relative;
     `,
     Input: styled.textarea`
         width: 100%;
@@ -73,6 +74,13 @@ export const Styled = {
         background-color: rgb(20, 20, 20);
         color: #aaa;
     `,
+    CharCount: styled.div`
+        position: absolute;
+        right: 20px;
+        top: 10px;
+        color: #fff;
+    `,
+
     ButtonsWrapper: styled.div`
         display: flex;
         gap: 10px;

@@ -53,7 +53,12 @@ const ChatBox = () => {
 
         setIsLoading(true);
         try {
-            const res = await fetch("https://gemini-chat-backend-ffoy.onrender.com/api/chat", {
+            // const res = await fetch("https://gemini-chat-backend-ffoy.onrender.com/api/chat", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify({ contents: updatedHistory })
+            // });
+            const res = await fetch("http://localhost:1198/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: updatedHistory })
@@ -97,7 +102,7 @@ const ChatBox = () => {
     };
     const confirmClearAllChats = () => {
         setChatHistory([]);
-        localStorage.removeItem("gemini_chat");
+        localStorage.removeItem("ai_chat");
         toast.info("All chats cleared");
         setConfirmClearAll(false);
         inputRef.current.focus();
@@ -128,9 +133,9 @@ const ChatBox = () => {
                                                 <FaRegUserCircle />
                                                 <div className="myQueryMain">{entry.parts[0].text}</div>
                                             </div>
-                                            <div className="geminiReply">
+                                            <div className="aiReply">
                                                 <FaRobot />
-                                                <div className="geminiReplyMain">
+                                                <div className="aiReplyMain">
                                                     {chatHistory[index + 1].parts[0].text}
                                                 </div>
                                             </div>
@@ -148,7 +153,7 @@ const ChatBox = () => {
                         )}
                         {isLoading && (
                             <div style={{ textAlign: "center", marginTop: "1rem", fontStyle: "italic" }}>
-                                Gemini is thinking...
+                                Thinking...
                             </div>
                         )}
                     </Styled.ChatBox>
@@ -157,10 +162,14 @@ const ChatBox = () => {
                         <Styled.Input
                             ref={inputRef}
                             rows="3"
+                            maxLength={50}
                             value={prompt}
                             onChange={(e) => setPrompt(e.target.value)}
-                            placeholder="Ask something..."
+                            placeholder="Ask something (max 50 chars)..."
                         />
+                        <Styled.CharCount>
+                            {prompt.length} / 50 characters
+                        </Styled.CharCount>
                         <Styled.ButtonsWrapper>
                             <Styled.Button onClick={() => handleAsk()} disabled={isLoading}>
                                 {isLoading ? <CircularProgress size={20} /> : "Send"}
