@@ -14,6 +14,11 @@ const sampleQuestions = [
     "Who invented Python and when?"
 ];
 
+const isLocalhost = window.location.hostname === "localhost";
+const BASE_URL = isLocalhost
+    ? "http://localhost:1198"
+    : "https://gemini-chat-backend-ffoy.onrender.com";
+
 const ChatBox = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [prompt, setPrompt] = useState("");
@@ -53,12 +58,7 @@ const ChatBox = () => {
 
         setIsLoading(true);
         try {
-            // const res = await fetch("https://gemini-chat-backend-ffoy.onrender.com/api/chat", {
-            //     method: "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify({ contents: updatedHistory })
-            // });
-            const res = await fetch("http://localhost:1198/api/chat", {
+            const res = await fetch(`${BASE_URL}/api/chat`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: updatedHistory })
@@ -152,10 +152,21 @@ const ChatBox = () => {
                             })
                         )}
                         {isLoading && (
-                            <div style={{ textAlign: "center", marginTop: "1rem", fontStyle: "italic" }}>
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "10px",
+                                fontStyle: "italic",
+                                marginTop: "1rem",
+                                fontSize: "14px",
+                                color: "#aaa"
+                            }}>
+                                <CircularProgress size={16} />
                                 Thinking...
                             </div>
                         )}
+
                     </Styled.ChatBox>
 
                     <Styled.ControlsSection>
