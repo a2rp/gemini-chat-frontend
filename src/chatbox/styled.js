@@ -77,6 +77,7 @@ export const Styled = {
         display: flex;
         gap: 10px;
         margin-top: 10px;
+        flex-wrap: wrap;
     `,
     Button: styled.button`
         padding: 0.7rem 1.5rem;
@@ -106,6 +107,15 @@ export const Styled = {
         &:hover {
             background: red;
             color: white;
+        }
+    `,
+    DevInfo: styled.div`
+        color: #333;
+        a {
+            color: #007bff;
+        }
+        &:hover {
+            color: #fff;
         }
     `,
 

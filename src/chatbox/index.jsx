@@ -53,7 +53,7 @@ const ChatBox = () => {
 
         setIsLoading(true);
         try {
-            const res = await fetch("http://localhost:1198/api/chat", {
+            const res = await fetch("https://gemini-chat-backend-ffoy.onrender.com/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: updatedHistory })
@@ -166,6 +166,7 @@ const ChatBox = () => {
                                 {isLoading ? <CircularProgress size={20} /> : "Send"}
                             </Styled.Button>
                             <Styled.ClearButton onClick={handleClearAll}>Clear All</Styled.ClearButton>
+                            <Styled.DevInfo>Designed and developed by <a href="https://www.ashishranjan.net" target='_blank'>Ashish Ranjan</a>.</Styled.DevInfo>
                         </Styled.ButtonsWrapper>
                     </Styled.ControlsSection>
                 </Styled.Main>
