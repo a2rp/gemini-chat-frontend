@@ -1,5 +1,6 @@
 {
     "name": "frontend",
+    "homepage": "https://a2rp.github.io/gemini-chat-frontend/",
     "private": true,
     "version": "0.0.0",
     "type": "module",
