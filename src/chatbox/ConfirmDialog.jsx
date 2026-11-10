@@ -1,24 +1,64 @@
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 
-const ConfirmDialog = ({ message, onConfirm, onCancel }) => {
+const ConfirmDialog = ({ title, message, onConfirm, onCancel }) => {
+    const dialogRef = useRef(null);
+
+    useEffect(() => {
+        const dialog = dialogRef.current;
+        const buttons = dialog?.querySelectorAll("button:not(:disabled)");
+        buttons?.[0]?.focus();
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                onCancel();
+                return;
+            }
+
+            if (event.key !== "Tab" || !buttons?.length) return;
+
+            const firstButton = buttons[0];
+            const lastButton = buttons[buttons.length - 1];
+
+            if (event.shiftKey && document.activeElement === firstButton) {
+                event.preventDefault();
+                lastButton.focus();
+            } else if (!event.shiftKey && document.activeElement === lastButton) {
+                event.preventDefault();
+                firstButton.focus();
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [onCancel]);
+
     return (
-        <>
-            <Overlay>
-                <Dialog>
-                    <h3>Confirm Deletion</h3>
-                    <p>{message}</p>
-                    <Buttons>
-                        <Button onClick={onCancel}>Cancel</Button>
-                        <Button onClick={onConfirm}>Delete</Button>
-                    </Buttons>
-                </Dialog>
-            </Overlay>
-        </>
+        <Overlay>
+            <Dialog
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="confirm-dialog-title"
+                aria-describedby="confirm-dialog-message"
+            >
+                <h3 id="confirm-dialog-title">{title}</h3>
+                <p id="confirm-dialog-message">{message}</p>
+                <Buttons>
+                    <Button type="button" onClick={onCancel}>
+                        Cancel
+                    </Button>
+                    <Button type="button" onClick={onConfirm}>
+                        Confirm
+                    </Button>
+                </Buttons>
+            </Dialog>
+        </Overlay>
     );
 };
 
 export default ConfirmDialog;
-
 
 const Overlay = styled.div`
     position: fixed;
@@ -55,13 +95,17 @@ const Button = styled.button`
     font-size: 14px;
 
     &:first-child {
-    background-color: #888;
-    color: white;
+        background-color: #888;
+        color: white;
     }
 
     &:last-child {
-    background-color: red;
-    color: white;
+        background-color: red;
+        color: white;
+    }
+
+    &:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 3px;
     }
 `;
-

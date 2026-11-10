@@ -15,6 +15,35 @@ const sampleQuestions = [
     "Who invented Python and when?",
 ];
 
+const CHAT_STORAGE_KEY = "gemini_chat";
+
+const isStoredMessage = (entry, role) =>
+    entry?.role === role &&
+    Array.isArray(entry.parts) &&
+    typeof entry.parts[0]?.text === "string";
+
+const loadChatHistory = () => {
+    try {
+        const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+        const parsed = saved ? JSON.parse(saved) : [];
+        if (!Array.isArray(parsed)) return [];
+
+        const history = [];
+        for (let index = 0; index < parsed.length - 1; index += 1) {
+            if (
+                isStoredMessage(parsed[index], "user") &&
+                isStoredMessage(parsed[index + 1], "model")
+            ) {
+                history.push(parsed[index], parsed[index + 1]);
+                index += 1;
+            }
+        }
+        return history;
+    } catch {
+        return [];
+    }
+};
+
 const footerLinks = [
     ["Portfolio", "https://www.ashishranjan.net/", FiGlobe],
     ["GitHub", "https://github.com/a2rp", FaGithub],
@@ -29,28 +58,22 @@ const footerLinks = [
 ];
 
 const isLocalhost = window.location.hostname === "localhost";
-const BASE_URL = isLocalhost
-    ? "http://localhost:1198"
-    : "https://gemini-chat-backend-ffoy.onrender.com";
+const BASE_URL = (
+    import.meta.env.VITE_CHAT_API_URL?.trim() ||
+    (isLocalhost
+        ? "http://localhost:1198"
+        : "https://gemini-chat-backend-ffoy.onrender.com")
+).replace(/\/+$/, "");
 
 const ChatBox = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [prompt, setPrompt] = useState("");
-    const [chatHistory, setChatHistory] = useState([]);
+    const [chatHistory, setChatHistory] = useState(loadChatHistory);
     const [confirmClearAll, setConfirmClearAll] = useState(false);
     const [confirmIndex, setConfirmIndex] = useState(null);
     const [showGoToTop, setShowGoToTop] = useState(false);
     const chatContainerRef = useRef(null);
     const inputRef = useRef(null);
-
-    useEffect(() => {
-        try {
-            const saved = localStorage.getItem("gemini_chat");
-            if (saved) setChatHistory(JSON.parse(saved));
-        } catch {
-            setChatHistory([]);
-        }
-    }, []);
 
     useEffect(() => {
         const container = chatContainerRef.current;
@@ -60,7 +83,7 @@ const ChatBox = () => {
         setShowGoToTop(container.scrollTop > 240);
 
         try {
-            localStorage.setItem("gemini_chat", JSON.stringify(chatHistory));
+            localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chatHistory));
         } catch {
             toast.error("Chat history could not be saved on this device.");
         }
@@ -76,8 +99,10 @@ const ChatBox = () => {
     }, []);
 
     const handleAsk = async (customPrompt) => {
-        const finalPrompt = customPrompt || prompt;
-        if (!finalPrompt.trim()) {
+        if (isLoading) return;
+
+        const finalPrompt = (customPrompt ?? prompt).trim();
+        if (!finalPrompt) {
             toast.info("Please enter a question.");
             inputRef.current?.focus();
             return;
@@ -95,9 +120,11 @@ const ChatBox = () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ contents: updatedHistory }),
             });
-            if (!response.ok) throw new Error("Failed to fetch response");
             const data = await response.json();
-            const reply = data?.reply || "No response was returned.";
+            if (!response.ok) throw new Error(data?.error || "Failed to fetch response");
+            const reply = typeof data?.reply === "string" && data.reply.trim()
+                ? data.reply
+                : "No response was returned.";
 
             setChatHistory([
                 ...updatedHistory,
@@ -126,7 +153,6 @@ const ChatBox = () => {
 
     const confirmClearAllChats = () => {
         setChatHistory([]);
-        localStorage.removeItem("gemini_chat");
         toast.info("All conversations cleared.");
         setConfirmClearAll(false);
         inputRef.current?.focus();
@@ -163,7 +189,7 @@ const ChatBox = () => {
                         <>
                             <Styled.Suggestions>
                                 {sampleQuestions.map((question) => (
-                                    <Styled.SuggestionCard key={question} onClick={() => handleAsk(question)}>
+                                    <Styled.SuggestionCard key={question} onClick={() => handleAsk(question)} disabled={isLoading}>
                                         {question}
                                     </Styled.SuggestionCard>
                                 ))}
@@ -185,7 +211,14 @@ const ChatBox = () => {
                                         <span className="messageIcon"><FaRobot /></span>
                                         <div className="messageText">{chatHistory[index + 1].parts[0].text}</div>
                                     </div>
-                                    <button className="deleteButton" type="button" onClick={() => handleDeletePair(index)} aria-label="Delete conversation" title="Delete conversation">
+                                    <button
+                                        className="deleteButton"
+                                        type="button"
+                                        onClick={() => handleDeletePair(index)}
+                                        disabled={isLoading}
+                                        aria-label={`Delete conversation: ${entry.parts[0].text.slice(0, 60)}`}
+                                        title="Delete conversation"
+                                    >
                                         <DeleteForeverIcon />
                                     </button>
                                 </Styled.ResponseBox>
@@ -194,8 +227,8 @@ const ChatBox = () => {
                     )}
 
                     {isLoading && (
-                        <Styled.LoadingMessage>
-                            <CircularProgress size={18} />
+                        <Styled.LoadingMessage role="status" aria-live="polite">
+                            <CircularProgress size={18} aria-label="Loading response" />
                             Preparing a reply...
                         </Styled.LoadingMessage>
                     )}
@@ -208,6 +241,7 @@ const ChatBox = () => {
                         maxLength={120}
                         value={prompt}
                         onChange={(event) => setPrompt(event.target.value)}
+                        disabled={isLoading}
                         placeholder="Ask something (max 120 characters)..."
                         aria-label="Your question"
                     />
@@ -216,7 +250,7 @@ const ChatBox = () => {
                         <Styled.Button type="button" onClick={() => handleAsk()} disabled={isLoading}>
                             {isLoading ? <CircularProgress size={20} color="inherit" /> : "Send"}
                         </Styled.Button>
-                        <Styled.ClearButton type="button" onClick={handleClearAll}>Clear all</Styled.ClearButton>
+                        <Styled.ClearButton type="button" onClick={handleClearAll} disabled={isLoading}>Clear all</Styled.ClearButton>
                     </Styled.ButtonsWrapper>
                 </Styled.ControlsSection>
             </Styled.Main>
@@ -239,10 +273,26 @@ const ChatBox = () => {
             )}
 
             {confirmIndex !== null && (
-                <ConfirmDialog message="Are you sure you want to delete this conversation?" onConfirm={confirmDelete} onCancel={() => setConfirmIndex(null)} />
+                <ConfirmDialog
+                    title="Delete conversation"
+                    message="Are you sure you want to delete this conversation?"
+                    onConfirm={confirmDelete}
+                    onCancel={() => {
+                        setConfirmIndex(null);
+                        inputRef.current?.focus();
+                    }}
+                />
             )}
             {confirmClearAll && (
-                <ConfirmDialog message="Are you sure you want to clear all conversations?" onConfirm={confirmClearAllChats} onCancel={() => setConfirmClearAll(false)} />
+                <ConfirmDialog
+                    title="Clear all conversations"
+                    message="Are you sure you want to clear all conversations?"
+                    onConfirm={confirmClearAllChats}
+                    onCancel={() => {
+                        setConfirmClearAll(false);
+                        inputRef.current?.focus();
+                    }}
+                />
             )}
         </Styled.Wrapper>
     );

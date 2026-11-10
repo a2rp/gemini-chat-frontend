@@ -130,11 +130,16 @@ export const Styled = {
         cursor: pointer;
         transition: border-color 160ms ease, box-shadow 160ms ease;
 
-        &:hover,
-        &:focus-visible {
+        &:hover:not(:disabled),
+        &:focus-visible:not(:disabled) {
             border-color: ${accent};
             box-shadow: 0 0 18px rgba(101, 212, 255, 0.16);
             outline: none;
+        }
+
+        &:disabled {
+            cursor: wait;
+            opacity: 0.6;
         }
     `,
     Note: styled.p`
@@ -218,6 +223,11 @@ export const Styled = {
             box-shadow: 0 0 14px rgba(248, 113, 113, 0.18);
             outline: none;
         }
+
+        .deleteButton:disabled {
+            cursor: wait;
+            opacity: 0.45;
+        }
     `,
     LoadingMessage: styled.div`
         display: flex;
@@ -246,6 +256,11 @@ export const Styled = {
         &:focus {
             border-color: ${accent};
             box-shadow: 0 0 0 3px rgba(101, 212, 255, 0.12);
+        }
+
+        &:disabled {
+            cursor: wait;
+            opacity: 0.75;
         }
     `,
     CharCount: styled.div`
@@ -282,6 +297,11 @@ export const Styled = {
             box-shadow: 0 0 18px rgba(101, 212, 255, 0.24);
             outline: none;
         }
+
+        &:disabled {
+            cursor: wait;
+            opacity: 0.65;
+        }
     `,
     ClearButton: styled.button`
         min-height: 42px;
@@ -298,6 +318,11 @@ export const Styled = {
             border-color: #ffb5b5;
             box-shadow: 0 0 16px rgba(239, 118, 118, 0.18);
             outline: none;
+        }
+
+        &:disabled {
+            cursor: wait;
+            opacity: 0.65;
         }
     `,
     Footer: styled.footer`

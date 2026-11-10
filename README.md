@@ -23,7 +23,9 @@ npm install
 npm run dev
 ```
 
-The local frontend expects the chat service at `http://localhost:1198`. The deployed frontend uses the configured hosted service endpoint.
+The local frontend expects the chat service at `http://localhost:1198`. Start the [backend](https://github.com/a2rp/gemini-chat-backend) separately for local chat. Copy `.env.example` to `.env` only if you want to override the API URL; the deployed frontend uses the hosted service endpoint by default.
+
+`VITE_CHAT_API_URL` can point to another backend URL. This value is public browser configuration; keep API keys in the backend environment only.
 
 ## Build and deploy
 

@@ -1,8 +1,8 @@
 {
-    "name": "frontend",
+    "name": "gemini-chat-frontend",
     "homepage": "https://a2rp.github.io/gemini-chat-frontend/",
     "private": true,
-    "version": "0.0.0",
+    "version": "1.0.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -33,5 +33,14 @@
         "eslint-plugin-react-refresh": "^0.4.19",
         "globals": "^16.0.0",
         "vite": "^6.3.5"
-    }
+    },
+    "description": "Responsive React chat interface with browser-based history and a Groq-powered chat service",
+    "keywords": [
+        "ai-chatbot",
+        "chat-frontend",
+        "groq",
+        "local-storage",
+        "react",
+        "vite"
+    ]
 }
