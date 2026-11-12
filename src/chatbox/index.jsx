@@ -16,6 +16,30 @@ const sampleQuestions = [
 ];
 
 const CHAT_STORAGE_KEY = "gemini_chat";
+const MAX_CONTEXT_MESSAGES = 20;
+const MAX_CONTEXT_LENGTH = 30_000;
+
+const getRecentContents = (contents) => {
+    const recentContents = contents.slice(-MAX_CONTEXT_MESSAGES);
+    while (recentContents[0]?.role === "model") recentContents.shift();
+
+    let contextLength = recentContents.reduce(
+        (total, entry) => total + entry.parts[0].text.length,
+        0
+    );
+
+    while (contextLength > MAX_CONTEXT_LENGTH && recentContents.length > 1) {
+        const userMessage = recentContents.shift();
+        contextLength -= userMessage.parts[0].text.length;
+
+        if (recentContents[0]?.role === "model") {
+            const modelMessage = recentContents.shift();
+            contextLength -= modelMessage.parts[0].text.length;
+        }
+    }
+
+    return recentContents;
+};
 
 const isStoredMessage = (entry, role) =>
     entry?.role === role &&
@@ -118,7 +142,7 @@ const ChatBox = () => {
             const response = await fetch(`${BASE_URL}/api/chat`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: updatedHistory }),
+                body: JSON.stringify({ contents: getRecentContents(updatedHistory) }),
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data?.error || "Failed to fetch response");
